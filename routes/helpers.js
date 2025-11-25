@@ -1,5 +1,5 @@
-const Table = require('../models/Table');
-const Booking = require('../models/Booking');
+const Table = require('../src/model/Table');
+const Booking = require('../src/model/Booking');
 
 // Lấy danh sách tables theo owner
 async function getTablesByOwner(ownerId) {

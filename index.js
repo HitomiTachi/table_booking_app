@@ -1,31 +1,30 @@
 const express = require('express');
-const mongoose = require('./db');
-const helpers = require('./routes/helpers');
+require('./db');
+
+const userRoutes = require('./routes/userRoutes');
+const tableRoutes = require('./routes/tableRoutes');
+const serviceRoutes = require('./routes/serviceRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const historyRoutes = require('./routes/historyRoutes');
 
 const app = express();
 app.use(express.json());
 
-// Route kiểm tra server
 app.get('/', (req, res) => {
-  res.send('Server is running!');
+  res.send('Table Booking API is running');
 });
 
-// Lấy danh sách tables theo owner
-app.get('/tables/:ownerId', async (req, res) => {
-  const tables = await helpers.getTablesByOwner(req.params.ownerId);
-  res.json(tables);
-});
+app.use('/api/users', userRoutes);
+app.use('/api/tables', tableRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/history', historyRoutes);
 
-// Lấy booking theo user (customer hoặc owner)
-app.get('/bookings/:userId/:role', async (req, res) => {
-  const bookings = await helpers.getBookingsByUser(req.params.userId, req.params.role);
-  res.json(bookings);
-});
-
-// Cập nhật trạng thái booking
-app.put('/booking/:bookingId/status', async (req, res) => {
-  const booking = await helpers.updateBookingStatus(req.params.bookingId, req.body.status);
-  res.json(booking);
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(err.statusCode || 500).json({
+    message: err.message || 'Có lỗi xảy ra, vui lòng thử lại sau',
+  });
 });
 
 const PORT = process.env.PORT || 3000;
